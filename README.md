@@ -1,50 +1,23 @@
-# React + TypeScript + Vite
+Welcome to the ia flower recognition system
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Simple terms
+1-Upload your photo (flower photo obv :P)
+![image](https://github.com/user-attachments/assets/f977bd4a-c4f8-48ca-8009-b33fa1af8521)
 
-Currently, two official plugins are available:
+2-It would upload your image for you to watch it
+![image](https://github.com/user-attachments/assets/860c8efe-afef-4ddc-b142-ebc080aba93a)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+3-Click on the recognize flower button
+![image](https://github.com/user-attachments/assets/699e4b66-f7f7-40c6-9c74-bf3f0e64abb3)
 
-## Expanding the ESLint configuration
+4-Wwatch the results
+![image](https://github.com/user-attachments/assets/97d90060-4893-4deb-82b1-737ceaaa6b82)
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
 
-- Configure the top-level `parserOptions` property like this:
+Instructions
+1-Clone the project
+2-Install the dependencies with npm install
+3-Run the program with npm run dev
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
