@@ -1,4 +1,15 @@
 {
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "types": ["firebase"],  // Adds Firebase type declarations
+    "moduleResolution": "node",
+    "strict": true,           // Enables strict type-checking options (optional, but recommended)
+    "esModuleInterop": true,  // Enables ES module interoperability (for easier imports)
+    "skipLibCheck": true      // Skips type checking for all declaration files (optional, for faster compilation)
+  },
   "files": [],
   "references": [
     {
@@ -7,11 +18,5 @@
     {
       "path": "./tsconfig.node.json"
     }
-  ],
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
+  ]
 }
