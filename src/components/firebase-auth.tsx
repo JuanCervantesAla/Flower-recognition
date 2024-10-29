@@ -29,7 +29,7 @@ export default function FirebaseAuth() {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
 
-  const handleRegister = async (e) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await createUserWithEmailAndPassword(auth, email, password);
@@ -40,7 +40,7 @@ export default function FirebaseAuth() {
     }
   };
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
