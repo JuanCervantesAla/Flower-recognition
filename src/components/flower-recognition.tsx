@@ -27,9 +27,7 @@ export default function FlowerRecognition() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Use imported images
   const flowers = [flower1, flower2, flower3, flower4];
-
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,13 +36,20 @@ export default function FlowerRecognition() {
       setImageFiles(files);
       setError(null);
       setResult(null);
-      setSelectedImage(null); // Reset selected image when new images are uploaded
+      setSelectedImage(null);
     }
   };
 
   const handleImageClick = (flower: string) => {
     setSelectedImage(flower);
-    setImageFiles([]); // Reset uploaded images if a carousel image is selected
+    setImageFiles([]);
+  };
+
+  const clearSelection = () => {
+    setImageFiles([]);
+    setSelectedImage(null);
+    setResult(null);
+    setError(null);
   };
 
   const classifyImages = async () => {
@@ -135,7 +140,6 @@ export default function FlowerRecognition() {
               Select from device
             </Button>
             
-            {/* Display Selected Image */}
             {selectedImage || imageFiles.length > 0 ? (
               <div className="flex justify-center mt-4">
                 <img 
@@ -146,7 +150,6 @@ export default function FlowerRecognition() {
               </div>
             ) : null}
 
-            {/* Image Carousel */}
             <div className="mt-4">
               <Slider {...settings}>
                 {flowers.map((flower, index) => (
@@ -160,7 +163,7 @@ export default function FlowerRecognition() {
                 ))}
               </Slider>
             </div>
-            
+
             <Button 
               type="button"
               onClick={classifyImages} 
@@ -168,6 +171,13 @@ export default function FlowerRecognition() {
               className="w-full bg-green-500 text-white font-bold py-2 rounded-full hover:bg-green-600 transition ease-in-out duration-200"
             >
               {isLoading ? 'Processing...' : 'Scan'}
+            </Button>
+            <Button 
+              type="button"
+              onClick={clearSelection} 
+              className="w-full bg-red-500 text-white font-bold py-2 rounded-full mt-2 hover:bg-red-600 transition ease-in-out duration-200"
+            >
+              Clear Selection
             </Button>
             {error && <p className="text-red-500">{error}</p>}
             {result && (
