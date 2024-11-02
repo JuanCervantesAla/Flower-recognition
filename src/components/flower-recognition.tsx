@@ -35,35 +35,29 @@ export default function FlowerRecognition() {
       imageFiles.forEach((file) => {
         formData.append('images', file);
       });
-  
+
       try {
         const response = await axios.post('/api/v2/identify/all', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
-            'Authorization': 'Bearer 2b10xV81gZyQwVj9Fwio71q9u',
+            'Authorization': 'Bearer 2b10xV81gZyQwVj9Fwio71q9u', // API key como token Bearer
           },
         });
-      
-        // Check if results exist in the response before mapping
-        if (response.data && Array.isArray(response.data.results)) {
+
+        // Asegúrate de que response.data.results existe
+        if (response.data.results && Array.isArray(response.data.results)) {
           const predictions: Prediction[] = response.data.results.map((result: any) => ({
-            scientificName: result.species.scientificName,
-            commonNames: result.species.commonNames || [],
-            probability: result.probability,
+            scientificName: result.species.scientificName, // Cambia según tu estructura
+            commonNames: result.species.commonNames || [], // Asegúrate de que este campo esté bien definido
+            probability: result.score, // Cambia según tu estructura
           }));
-      
           setResults(predictions);
         } else {
-          // Handle case where results are not present
           setError("No results found in the response.");
         }
       } catch (error) {
-        console.error("Error occurred:", error);
-      
         if (axios.isAxiosError(error)) {
           setError("Error classifying image: " + (error.response?.data.message || "Unknown error"));
-        } else if (error instanceof Error) {
-          setError("An unexpected error occurred: " + error.message);
         } else {
           setError("An unexpected error occurred.");
         }
