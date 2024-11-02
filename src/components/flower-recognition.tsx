@@ -13,7 +13,7 @@ interface Prediction {
 
 export default function FlowerRecognition() {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
-  const [results, setResults] = useState<Prediction[]>([]);
+  const [result, setResult] = useState<Prediction | null>(null); // Change to single Prediction
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,54 +22,55 @@ export default function FlowerRecognition() {
     if (files.length > 0) {
       setImageFiles(files);
       setError(null);
+      setResult(null); // Reset result when new images are uploaded
     }
   };
 
   const classifyImages = async () => {
     if (imageFiles.length > 0) {
-        setIsLoading(true);
-        setError(null);
-        const formData = new FormData();
-        imageFiles.forEach((file) => {
-            formData.append('images', file);
+      setIsLoading(true);
+      setError(null);
+      const formData = new FormData();
+      imageFiles.forEach((file) => {
+        formData.append('images', file);
+      });
+      formData.append('organs', 'flower'); // Add if your API requires it
+
+      try {
+        const response = await axios.post('https://my-api.plantnet.org/v2/identify/all?api-key=2b10xV81gZyQwVj9Fwio71q9u', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         });
-        // Example additional data if needed
-        formData.append('organs', 'flower'); // Add if your API requires it
 
-        try {
-            const response = await axios.post('https://my-api.plantnet.org/v2/identify/all?api-key=2b10xV81gZyQwVj9Fwio71q9u', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+        console.log("Response from API:", response.data);
 
-            console.log("Response from API:", response.data);
-
-            if (response.data && response.data.results && Array.isArray(response.data.results)) {
-                if (response.data.results.length === 0) {
-                    setError("The result set is empty.");
-                } else {
-                    const predictions: Prediction[] = response.data.results.map((result: any) => ({
-                        scientificName: result.species.scientificName,
-                        commonNames: result.species.commonNames || [],
-                        probability: result.score,
-                    }));
-                    setResults(predictions);
-                }
-            } else {
-                setError("No results found in the response.");
-            }
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                setError("Error classifying image: " + (error.response?.data.message || "Unknown error"));
-            } else {
-                setError("An unexpected error occurred: ");
-            }
-        } finally {
-            setIsLoading(false);
+        if (response.data && response.data.results && Array.isArray(response.data.results)) {
+          if (response.data.results.length === 0) {
+            setError("The result set is empty.");
+          } else {
+            const firstResult = response.data.results[0]; // Get only the first result
+            const prediction: Prediction = {
+              scientificName: firstResult.species.scientificName,
+              commonNames: firstResult.species.commonNames || [],
+              probability: firstResult.score,
+            };
+            setResult(prediction); // Set single result
+          }
+        } else {
+          setError("No results found in the response.");
         }
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          setError("Error classifying image: " + (error.response?.data.message || "Unknown error"));
+        } else {
+          setError("An unexpected error occurred.");
+        }
+      } finally {
+        setIsLoading(false);
+      }
     }
-};
+  };
 
   const capitalizeFirstLetter = (string: string) => {
     if (!string) return '';
@@ -116,17 +117,13 @@ export default function FlowerRecognition() {
               {isLoading ? 'Processing...' : 'Scan'}
             </Button>
             {error && <p className="text-red-500">{error}</p>}
-            {results.length > 0 && (
+            {result && ( // Change here to render only the first result
               <div className="mt-4">
-                <h3 className="text-lg font-semibold mb-2">Results:</h3>
-                <ul className="list-disc pl-5">
-                  {results.map((result, index) => (
-                    <li key={index} className="text-gray-800">
-                      {capitalizeFirstLetter(result.scientificName)} - {(result.probability * 100).toFixed(2)}%
-                      {result.commonNames.length > 0 && <span> ({result.commonNames.join(', ')})</span>}
-                    </li>
-                  ))}
-                </ul>
+                <h3 className="text-lg font-semibold mb-2">Result:</h3>
+                <p className="text-gray-800">
+                  {capitalizeFirstLetter(result.scientificName)} - {(result.probability * 100).toFixed(2)}%
+                  {result.commonNames.length > 0 && <span> ({result.commonNames.join(', ')})</span>}
+                </p>
               </div>
             )}
           </div>
