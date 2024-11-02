@@ -1,13 +1,15 @@
-import React from 'react';
-import FlowerRecognition from './components/flower-recognition.tsx';
-import FirebaseAuth from './components/firebase-auth.tsx';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import FirebaseAuth from "./components/firebase-auth";
+import FlowerRecognition from "./components/flower-recognition";
 
 function App() {
   return (
-    <div className="App">
-      <h1>Flower Recognition App</h1>
-      <FirebaseAuth />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<FirebaseAuth />} />
+        <Route path="/flower-recognition" element={<FlowerRecognition />} />
+      </Routes>
+    </Router>
   );
 }
 
