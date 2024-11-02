@@ -37,19 +37,20 @@ export default function FlowerRecognition() {
       });
 
       try {
+        // Asegúrate de que la URL esté correcta y de que el proxy esté funcionando
         const response = await axios.post('/api/v2/identify/all', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
-            'Authorization': 'Bearer 2b10xV81gZyQwVj9Fwio71q9u', // API key como token Bearer
+            'Authorization': 'Bearer 2b10xV81gZyQwVj9Fwio71q9u',
           },
         });
 
-        // Asegúrate de que response.data.results existe
-        if (response.data.results && Array.isArray(response.data.results)) {
+        // Revisa la estructura de la respuesta
+        if (response.data && response.data.results && Array.isArray(response.data.results)) {
           const predictions: Prediction[] = response.data.results.map((result: any) => ({
-            scientificName: result.species.scientificName, // Cambia según tu estructura
-            commonNames: result.species.commonNames || [], // Asegúrate de que este campo esté bien definido
-            probability: result.score, // Cambia según tu estructura
+            scientificName: result.species.scientificName,
+            commonNames: result.species.commonNames || [],
+            probability: result.score,
           }));
           setResults(predictions);
         } else {
@@ -57,6 +58,7 @@ export default function FlowerRecognition() {
         }
       } catch (error) {
         if (axios.isAxiosError(error)) {
+          // Asegúrate de manejar los errores de manera informativa
           setError("Error classifying image: " + (error.response?.data.message || "Unknown error"));
         } else {
           setError("An unexpected error occurred.");
