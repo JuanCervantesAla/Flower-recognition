@@ -8,6 +8,12 @@ import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
+// Import images directly
+import flower1 from '../assets/flower1.jpg';
+import flower2 from '../assets/flower2.jpg';
+import flower3 from '../assets/flower3.jpg';
+import flower4 from '../assets/flower4.jpg';
+
 interface Prediction {
   scientificName: string;
   commonNames: string[];
@@ -21,12 +27,8 @@ export default function FlowerRecognition() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const flowers = [
-    '/src/assets/flower1.jpg',
-    '/src/assets/flower2.jpg',
-    '/src/assets/flower3.jpg',
-    '/src/assets/flower4.jpg',
-  ];
+  // Use imported images
+  const flowers = [flower1, flower2, flower3, flower4];
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
