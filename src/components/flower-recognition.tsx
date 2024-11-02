@@ -44,24 +44,27 @@ export default function FlowerRecognition() {
           },
         });
       
-        const predictions: Prediction[] = response.data.results.map((result: any) => ({
-          scientificName: result.species.scientificName,
-          commonNames: result.species.commonNames || [],
-          probability: result.probability,
-        }));
+        // Check if results exist in the response before mapping
+        if (response.data && Array.isArray(response.data.results)) {
+          const predictions: Prediction[] = response.data.results.map((result: any) => ({
+            scientificName: result.species.scientificName,
+            commonNames: result.species.commonNames || [],
+            probability: result.probability,
+          }));
       
-        setResults(predictions);
+          setResults(predictions);
+        } else {
+          // Handle case where results are not present
+          setError("No results found in the response.");
+        }
       } catch (error) {
-        // Log the error for debugging
         console.error("Error occurred:", error);
       
         if (axios.isAxiosError(error)) {
           setError("Error classifying image: " + (error.response?.data.message || "Unknown error"));
         } else if (error instanceof Error) {
-          // Capture generic error message
           setError("An unexpected error occurred: " + error.message);
         } else {
-          // Fallback for unknown types of errors
           setError("An unexpected error occurred.");
         }
       } finally {
