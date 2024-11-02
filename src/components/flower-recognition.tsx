@@ -27,50 +27,49 @@ export default function FlowerRecognition() {
 
   const classifyImages = async () => {
     if (imageFiles.length > 0) {
-      setIsLoading(true);
-      setError(null);
-      const formData = new FormData();
-      imageFiles.forEach((file) => {
-        formData.append('images', file);
-      });
-
-      try {
-        // Update the API URL to use the proxy
-        const response = await axios.post('/api/v2/identify/all?include-related-images=false&no-reject=false&nb-results=4&lang=es&api-key=2b10xV81gZyQwVj9Fwio71q9u', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+        setIsLoading(true);
+        setError(null);
+        const formData = new FormData();
+        imageFiles.forEach((file) => {
+            formData.append('images', file);
         });
+        // Example additional data if needed
+        formData.append('organs', 'flower'); // Add if your API requires it
 
-        // Log the response
-        console.log("Response from API:", response.data);
+        try {
+            const response = await axios.post('https://my-api.plantnet.org/v2/identify/all?api-key=2b10xV81gZyQwVj9Fwio71q9u', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
 
-        // Check the response structure
-        if (response.data && response.data.results && Array.isArray(response.data.results)) {
-          if (response.data.results.length === 0) {
-            setError("The result set is empty.");
-          } else {
-            const predictions: Prediction[] = response.data.results.map((result: any) => ({
-              scientificName: result.species.scientificName,
-              commonNames: result.species.commonNames || [],
-              probability: result.score,
-            }));
-            setResults(predictions);
-          }
-        } else {
-          setError("No results found in the response.");
+            console.log("Response from API:", response.data);
+
+            if (response.data && response.data.results && Array.isArray(response.data.results)) {
+                if (response.data.results.length === 0) {
+                    setError("The result set is empty.");
+                } else {
+                    const predictions: Prediction[] = response.data.results.map((result: any) => ({
+                        scientificName: result.species.scientificName,
+                        commonNames: result.species.commonNames || [],
+                        probability: result.score,
+                    }));
+                    setResults(predictions);
+                }
+            } else {
+                setError("No results found in the response.");
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setError("Error classifying image: " + (error.response?.data.message || "Unknown error"));
+            } else {
+                setError("An unexpected error occurred: ");
+            }
+        } finally {
+            setIsLoading(false);
         }
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          setError("Error classifying image: " + (error.response?.data.message || "Unknown error"));
-        } else {
-          setError("An unexpected error occurred.");
-        }
-      } finally {
-        setIsLoading(false); // Ensure loading state is reset
-      }
     }
-  };
+};
 
   const capitalizeFirstLetter = (string: string) => {
     if (!string) return '';
