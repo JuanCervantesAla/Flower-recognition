@@ -35,26 +35,33 @@ export default function FlowerRecognition() {
       imageFiles.forEach((file) => {
         formData.append('images', file);
       });
-
+  
       try {
         const response = await axios.post('/api/v2/identify/all', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
-            'Authorization': 'Bearer 2b10xV81gZyQwVj9Fwio71q9u', // API key como token Bearer
+            'Authorization': 'Bearer 2b10xV81gZyQwVj9Fwio71q9u',
           },
         });
-
+      
         const predictions: Prediction[] = response.data.results.map((result: any) => ({
           scientificName: result.species.scientificName,
           commonNames: result.species.commonNames || [],
           probability: result.probability,
         }));
-
+      
         setResults(predictions);
       } catch (error) {
+        // Log the error for debugging
+        console.error("Error occurred:", error);
+      
         if (axios.isAxiosError(error)) {
           setError("Error classifying image: " + (error.response?.data.message || "Unknown error"));
+        } else if (error instanceof Error) {
+          // Capture generic error message
+          setError("An unexpected error occurred: " + error.message);
         } else {
+          // Fallback for unknown types of errors
           setError("An unexpected error occurred.");
         }
       } finally {
