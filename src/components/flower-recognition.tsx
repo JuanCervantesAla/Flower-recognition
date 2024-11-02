@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useState } from 'react';
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
@@ -37,10 +35,9 @@ export default function FlowerRecognition() {
       });
 
       try {
-        const response = await axios.post('/api/v2/identify/all', formData, {
+        const response = await axios.post('https://my-api.plantnet.org/v2/identify/all?include-related-images=false&no-reject=false&nb-results=4&lang=es&api-key=2b10xV81gZyQwVj9Fwio71q9u', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
-            'Authorization': 'Bearer 2b10xV81gZyQwVj9Fwio71q9u',
           },
         });
 
