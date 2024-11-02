@@ -35,16 +35,17 @@ export default function FlowerRecognition() {
       });
 
       try {
-        const response = await axios.post('https://my-api.plantnet.org/v2/identify/all?include-related-images=false&no-reject=false&nb-results=4&lang=es&api-key=2b10xV81gZyQwVj9Fwio71q9u', formData, {
+        // Update the API URL to use the proxy
+        const response = await axios.post('/api/v2/identify/all?include-related-images=false&no-reject=false&nb-results=4&lang=es&api-key=2b10xV81gZyQwVj9Fwio71q9u', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
 
-        // Mostrar la respuesta completa en la consola
+        // Log the response
         console.log("Response from API:", response.data);
 
-        // Revisa la estructura de la respuesta
+        // Check the response structure
         if (response.data && response.data.results && Array.isArray(response.data.results)) {
           if (response.data.results.length === 0) {
             setError("The result set is empty.");
@@ -66,7 +67,7 @@ export default function FlowerRecognition() {
           setError("An unexpected error occurred.");
         }
       } finally {
-        setIsLoading(false); // Mover esto aquí para asegurarte de que se ejecute al final
+        setIsLoading(false); // Ensure loading state is reset
       }
     }
   };
