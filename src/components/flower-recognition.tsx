@@ -115,7 +115,7 @@ export default function FlowerRecognition() {
 
   const fetchPlantCare = async (scientificName: string) => {
     try {
-      const response = await axios.get(`YOUR_GEMINI_API_URL`, {
+      const response = await axios.get(`AIzaSyA1dT1FWcdh6UolLr55PS_q-wWZ3o6wqNw`, {
         params: {
           query: `Cuidados para la planta ${scientificName}. Necesito información sobre agua, luz y altura.`
         }
