@@ -28,6 +28,8 @@ interface CareInfo {
 }
 
 export default function FlowerRecognition() {
+  const [loading, setLoading] = useState(false);
+  const [errorPrompt, setErrorPrompt] = useState("");
   const [resultPrompt, setResultPrompt] = useState("");
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -119,11 +121,18 @@ export default function FlowerRecognition() {
     const genAI = new GoogleGenerativeAI(process.env.API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const prompt = "Write a story about a magic backpack.";
+    const prompt = "Tell in short terms the water, light and 1 care of this plant "+{scientificName};
+    setLoading(true);
 
-    const resultPrompt = await model.generateContent(prompt);
+    try {
+      const response = await model.generateContent(prompt);
+      setResultPrompt(response);
+    } catch (errorPrompt) {
+      setErrorPrompt("Error fetching content: ");
+    } finally {
+      setLoading(false); 
+    }
   };
-
   const capitalizeFirstLetter = (string: string) => {
     if (!string) return '';
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
