@@ -21,19 +21,12 @@ interface Prediction {
   probability: number;
 }
 
-interface CareInfo {
-  water: string;
-  light: string;
-  growthHeight: string;
-}
-
 export default function FlowerRecognition() {
   const [errorPrompt, setErrorPrompt] = useState("");
   const [resultPrompt, setResultPrompt] = useState("");
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [result, setResult] = useState<Prediction | null>(null);
-  const [careInfo, setCareInfo] = useState<CareInfo | null>(null); 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,7 +40,6 @@ export default function FlowerRecognition() {
       setError(null);
       setResult(null);
       setSelectedImage(null);
-      setCareInfo(null);
     }
   };
 
@@ -61,7 +53,6 @@ export default function FlowerRecognition() {
     setSelectedImage(null);
     setResult(null);
     setError(null);
-    setCareInfo(null); 
   };
 
   const classifyImages = async () => {
