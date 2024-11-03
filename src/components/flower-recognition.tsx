@@ -109,7 +109,7 @@ export default function FlowerRecognition() {
   };
 
   const fetchPlantCare = async (scientificName: string) => {
-    const apiKey = process.env.REACT_APP_API_KEY;
+    const apiKey = "AIzaSyB65kNbep-XaLFjxZ2nlTgwW0zACFRMf5Q";
   
     if (!apiKey) {
       setErrorPrompt("API key is not defined. Please check your environment variables.");
