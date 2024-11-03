@@ -8,7 +8,8 @@ import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-// Import images directly
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+
 import flower1 from '../assets/flower1.jpg';
 import flower2 from '../assets/flower2.jpg';
 import flower3 from '../assets/flower3.jpg';
@@ -27,10 +28,11 @@ interface CareInfo {
 }
 
 export default function FlowerRecognition() {
+  const [resultPrompt, setResultPrompt] = useState("");
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [result, setResult] = useState<Prediction | null>(null);
-  const [careInfo, setCareInfo] = useState<CareInfo | null>(null); // Estado para cuidados
+  const [careInfo, setCareInfo] = useState<CareInfo | null>(null); 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,7 +46,7 @@ export default function FlowerRecognition() {
       setError(null);
       setResult(null);
       setSelectedImage(null);
-      setCareInfo(null); // Resetear información de cuidados
+      setCareInfo(null);
     }
   };
 
@@ -58,7 +60,7 @@ export default function FlowerRecognition() {
     setSelectedImage(null);
     setResult(null);
     setError(null);
-    setCareInfo(null); // Resetear información de cuidados
+    setCareInfo(null); 
   };
 
   const classifyImages = async () => {
@@ -96,7 +98,7 @@ export default function FlowerRecognition() {
               probability: firstResult.score,
             };
             setResult(prediction);
-            await fetchPlantCare(firstResult.species.scientificName); // Obtener cuidados de la planta
+            await fetchPlantCare(firstResult.species.scientificName);
           }
         } else {
           setError("No results found in the response.");
@@ -114,24 +116,12 @@ export default function FlowerRecognition() {
   };
 
   const fetchPlantCare = async (scientificName: string) => {
-    try {
-      const response = await axios.get(`AIzaSyA1dT1FWcdh6UolLr55PS_q-wWZ3o6wqNw`, {
-        params: {
-          query: `Cuidados para la planta ${scientificName}. Necesito información sobre agua, luz y altura.`
-        }
-      });
-      
-      // Asumiendo que la respuesta tiene la estructura adecuada
-      const careData = response.data; // Ajusta esto según la estructura de respuesta de Gemini
+    const genAI = new GoogleGenerativeAI(process.env.API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-      setCareInfo({
-        water: careData.water || "No info available",
-        light: careData.light || "No info available",
-        growthHeight: careData.growthHeight || "No info available"
-      });
-    } catch (error) {
-      setError("Error fetching care information: ");
-    }
+    const prompt = "Write a story about a magic backpack.";
+
+    const resultPrompt = await model.generateContent(prompt);
   };
 
   const capitalizeFirstLetter = (string: string) => {
@@ -226,17 +216,13 @@ export default function FlowerRecognition() {
         </Card>
         <Card className="w-full max-w-md mx-auto rounded-lg shadow-lg border border-gray-300 bg-white p-5">
           <CardHeader>
-            <CardTitle className="text-3xl text-center font-extrabold text-gray-800">Plant Care</CardTitle>
+            <CardTitle className="text-3xl text-center font-extrabold text-gray-800">Care Information</CardTitle>
           </CardHeader>
           <CardContent>
             {careInfo ? (
-              <div className="space-y-4">
-                <p><strong>Water:</strong> {careInfo.water}</p>
-                <p><strong>Light:</strong> {careInfo.light}</p>
-                <p><strong>Height:</strong> {careInfo.growthHeight}</p>
-              </div>
+              <p className="text-gray-800">{resultPrompt}</p>
             ) : (
-              <p className="text-gray-500">Select a flower to see care information.</p>
+              <p className="text-gray-500">No care information available yet.</p>
             )}
           </CardContent>
         </Card>
