@@ -20,10 +20,17 @@ interface Prediction {
   probability: number;
 }
 
+interface CareInfo {
+  water: string;
+  light: string;
+  growthHeight: string;
+}
+
 export default function FlowerRecognition() {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [result, setResult] = useState<Prediction | null>(null);
+  const [careInfo, setCareInfo] = useState<CareInfo | null>(null); // Estado para cuidados
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,6 +44,7 @@ export default function FlowerRecognition() {
       setError(null);
       setResult(null);
       setSelectedImage(null);
+      setCareInfo(null); // Resetear información de cuidados
     }
   };
 
@@ -50,6 +58,7 @@ export default function FlowerRecognition() {
     setSelectedImage(null);
     setResult(null);
     setError(null);
+    setCareInfo(null); // Resetear información de cuidados
   };
 
   const classifyImages = async () => {
@@ -87,6 +96,7 @@ export default function FlowerRecognition() {
               probability: firstResult.score,
             };
             setResult(prediction);
+            await fetchPlantCare(firstResult.species.scientificName); // Obtener cuidados de la planta
           }
         } else {
           setError("No results found in the response.");
@@ -100,6 +110,27 @@ export default function FlowerRecognition() {
       } finally {
         setIsLoading(false);
       }
+    }
+  };
+
+  const fetchPlantCare = async (scientificName: string) => {
+    try {
+      const response = await axios.get(`YOUR_GEMINI_API_URL`, {
+        params: {
+          query: `Cuidados para la planta ${scientificName}. Necesito información sobre agua, luz y altura.`
+        }
+      });
+      
+      // Asumiendo que la respuesta tiene la estructura adecuada
+      const careData = response.data; // Ajusta esto según la estructura de respuesta de Gemini
+
+      setCareInfo({
+        water: careData.water || "No info available",
+        light: careData.light || "No info available",
+        growthHeight: careData.growthHeight || "No info available"
+      });
+    } catch (error) {
+      setError("Error fetching care information: ");
     }
   };
 
@@ -119,79 +150,97 @@ export default function FlowerRecognition() {
 
   return (
     <div className="bg-gradient-to-r from-blue-400 to-purple-500 min-h-screen flex items-center justify-center">
-      <Card className="w-full max-w-md mx-auto rounded-lg shadow-lg border border-gray-300 bg-white p-5">
-        <CardHeader>
-          <CardTitle className="text-3xl text-center font-extrabold text-gray-800">Flower Recognition</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <Label htmlFor="image-upload" className="font-medium">Upload images of flowers (up to 5)</Label>
-            <Input 
-              id="image-upload" 
-              type="file" 
-              accept="image/*" 
-              multiple 
-              onChange={handleImageUpload} 
-              className="mt-1 border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-400"
-              ref={fileInputRef} 
-              style={{ display: 'none' }} 
-            />
-            <Button onClick={() => fileInputRef.current?.click()} className="w-full mb-4">
-              Select from device
-            </Button>
-            
-            {selectedImage || imageFiles.length > 0 ? (
-              <div className="flex justify-center mt-4">
-                <img 
-                  src={selectedImage || URL.createObjectURL(imageFiles[0])} 
-                  alt="Selected Flower" 
-                  className="w-48 h-48 object-cover rounded-lg border-2 border-gray-300"
-                />
-              </div>
-            ) : null}
+      <div className="flex space-x-4"> {/* Wrapper to align both cards */}
+        <Card className="w-full max-w-md mx-auto rounded-lg shadow-lg border border-gray-300 bg-white p-5">
+          <CardHeader>
+            <CardTitle className="text-3xl text-center font-extrabold text-gray-800">Flower Recognition</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <Label htmlFor="image-upload" className="font-medium">Upload images of flowers (up to 5)</Label>
+              <Input 
+                id="image-upload" 
+                type="file" 
+                accept="image/*" 
+                multiple 
+                onChange={handleImageUpload} 
+                className="mt-1 border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-400"
+                ref={fileInputRef} 
+                style={{ display: 'none' }} 
+              />
+              <Button onClick={() => fileInputRef.current?.click()} className="w-full mb-4">
+                Select from device
+              </Button>
+              
+              {selectedImage || imageFiles.length > 0 ? (
+                <div className="flex justify-center mt-4">
+                  <img 
+                    src={selectedImage || URL.createObjectURL(imageFiles[0])} 
+                    alt="Selected Flower" 
+                    className="w-48 h-48 object-cover rounded-lg border-2 border-gray-300"
+                  />
+                </div>
+              ) : null}
 
-            <div className="mt-4">
-              <Slider {...settings}>
-                {flowers.map((flower, index) => (
-                  <div key={index} onClick={() => handleImageClick(flower)} className="flex justify-center">
-                    <img 
-                      src={flower} 
-                      alt={`Flower ${index + 1}`} 
-                      className={`w-32 h-32 object-cover rounded-lg cursor-pointer ${selectedImage === flower ? 'border-4 border-green-500' : ''}`}
-                    />
-                  </div>
-                ))}
-              </Slider>
-            </div>
-
-            <Button 
-              type="button"
-              onClick={classifyImages} 
-              disabled={(imageFiles.length === 0 && !selectedImage) || isLoading} 
-              className="w-full bg-green-500 text-white font-bold py-2 rounded-full hover:bg-green-600 transition ease-in-out duration-200"
-            >
-              {isLoading ? 'Processing...' : 'Scan'}
-            </Button>
-            <Button 
-              type="button"
-              onClick={clearSelection} 
-              className="w-full bg-red-500 text-white font-bold py-2 rounded-full mt-2 hover:bg-red-600 transition ease-in-out duration-200"
-            >
-              Clear Selection
-            </Button>
-            {error && <p className="text-red-500">{error}</p>}
-            {result && (
               <div className="mt-4">
-                <h3 className="text-lg font-semibold mb-2">Result:</h3>
-                <p className="text-gray-800">
-                  {capitalizeFirstLetter(result.scientificName)} - {(result.probability * 100).toFixed(2)}%
-                  {result.commonNames.length > 0 && <span> ({result.commonNames.join(', ')})</span>}
-                </p>
+                <Slider {...settings}>
+                  {flowers.map((flower, index) => (
+                    <div key={index} onClick={() => handleImageClick(flower)} className="flex justify-center">
+                      <img 
+                        src={flower} 
+                        alt={`Flower ${index + 1}`} 
+                        className={`w-32 h-32 object-cover rounded-lg cursor-pointer ${selectedImage === flower ? 'border-4 border-green-500' : ''}`}
+                      />
+                    </div>
+                  ))}
+                </Slider>
               </div>
+
+              <Button 
+                type="button"
+                onClick={classifyImages} 
+                disabled={(imageFiles.length === 0 && !selectedImage) || isLoading} 
+                className="w-full bg-green-500 text-white font-bold py-2 rounded-full hover:bg-green-600 transition ease-in-out duration-200"
+              >
+                {isLoading ? 'Processing...' : 'Scan'}
+              </Button>
+              <Button 
+                type="button"
+                onClick={clearSelection} 
+                className="w-full bg-red-500 text-white font-bold py-2 rounded-full mt-2 hover:bg-red-600 transition ease-in-out duration-200"
+              >
+                Clear Selection
+              </Button>
+              {error && <p className="text-red-500">{error}</p>}
+              {result && (
+                <div className="mt-4">
+                  <h3 className="text-lg font-semibold mb-2">Result:</h3>
+                  <p className="text-gray-800">
+                    {capitalizeFirstLetter(result.scientificName)} - {(result.probability * 100).toFixed(2)}%
+                    {result.commonNames.length > 0 && <span> ({result.commonNames.join(', ')})</span>}
+                  </p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="w-full max-w-md mx-auto rounded-lg shadow-lg border border-gray-300 bg-white p-5">
+          <CardHeader>
+            <CardTitle className="text-3xl text-center font-extrabold text-gray-800">Plant Care</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {careInfo ? (
+              <div className="space-y-4">
+                <p><strong>Water:</strong> {careInfo.water}</p>
+                <p><strong>Light:</strong> {careInfo.light}</p>
+                <p><strong>Height:</strong> {careInfo.growthHeight}</p>
+              </div>
+            ) : (
+              <p className="text-gray-500">Select a flower to see care information.</p>
             )}
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
