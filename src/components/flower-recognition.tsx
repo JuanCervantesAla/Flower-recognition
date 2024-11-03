@@ -124,8 +124,17 @@ export default function FlowerRecognition() {
     try {
       const result = await model.generateContent(prompt);
       
-      setReal(result.response.text());
-
+      const cleanText = (text: string) => {
+        return text
+          .replace(/[*#]/g, '')
+          .replace(/\s{2,}/g, ' ')
+          .trim(); 
+      };
+  
+      // Limpia el texto antes de establecer el estado
+      const cleanedText = cleanText(result.response.text());
+      setReal(cleanedText);
+  
     } catch (error) {
       setErrorPrompt("Error fetching content: " + (error as Error).message);
     }
