@@ -8,7 +8,7 @@ import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+import { GoogleGenerativeAI as oI } from "@google/generative-ai";
 
 import flower1 from '../assets/flower1.jpg';
 import flower2 from '../assets/flower2.jpg';
@@ -22,8 +22,8 @@ interface Prediction {
 }
 
 export default function FlowerRecognition() {
+  const [real, setReal] = useState("");
   const [errorPrompt, setErrorPrompt] = useState("");
-  const [resultPrompt, setResultPrompt] = useState("");
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [result, setResult] = useState<Prediction | null>(null);
@@ -53,6 +53,7 @@ export default function FlowerRecognition() {
     setSelectedImage(null);
     setResult(null);
     setError(null);
+    setReal("");
   };
 
   const classifyImages = async () => {
@@ -108,19 +109,30 @@ export default function FlowerRecognition() {
   };
 
   const fetchPlantCare = async (scientificName: string) => {
-    const genAI = new GoogleGenerativeAI(process.env.API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
+    const apiKey = process.env.REACT_APP_API_KEY;
+  
+    if (!apiKey) {
+      setErrorPrompt("API key is not defined. Please check your environment variables.");
+      return;
+    }
+  
+    const genAI = new oI(apiKey);
+    const model = await genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  
     const prompt = `Tell in short terms the water, light and 1 care of this plant ${scientificName}`;
-
+  
     try {
-      const response = await model.generateContent(prompt);
-      setResultPrompt(response);
+      const result = await model.generateContent(prompt);
+      
+      setReal(result.response.text());
+
     } catch (error) {
       setErrorPrompt("Error fetching content: " + (error as Error).message);
     }
   };
   
+  
+
   const capitalizeFirstLetter = (string: string) => {
     if (!string) return '';
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
@@ -209,8 +221,15 @@ export default function FlowerRecognition() {
                   </p>
                 </div>
               )}
-              {resultPrompt && <p className="text-gray-800">{resultPrompt}</p>} {/* Mostrar resultPrompt si existe */}
             </div>
+          </CardContent>
+        </Card>
+        <Card className="w-full max-w-md mx-auto rounded-lg shadow-lg border border-gray-300 bg-white p-5">
+          <CardHeader>
+            <CardTitle className="text-3xl text-center font-extrabold text-gray-800">Cuidados</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-800">{real}</p>
           </CardContent>
         </Card>
       </div>
