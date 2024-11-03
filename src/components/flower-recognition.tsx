@@ -119,7 +119,7 @@ export default function FlowerRecognition() {
     const genAI = new oI(apiKey);
     const model = await genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   
-    const prompt = `dime cuales son los cuidados de una rosa${scientificName}`;
+    const prompt = `Dime cuales son los cuidados de una ${scientificName} en palabras simples`;
   
     try {
       const result = await model.generateContent(prompt);
