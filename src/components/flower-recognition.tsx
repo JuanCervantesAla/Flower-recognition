@@ -120,15 +120,16 @@ export default function FlowerRecognition() {
     const genAI = new GoogleGenerativeAI(process.env.API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const prompt = "Tell in short terms the water, light and 1 care of this plant "+{scientificName};
+    const prompt = `Tell in short terms the water, light and 1 care of this plant ${scientificName}`;
 
     try {
       const response = await model.generateContent(prompt);
       setResultPrompt(response);
-    } catch (errorPrompt) {
-      setErrorPrompt("Error fetching content: " + errorPrompt);
+    } catch (error) {
+      setErrorPrompt("Error fetching content: " + (error as Error).message);
     }
   };
+  
   const capitalizeFirstLetter = (string: string) => {
     if (!string) return '';
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
@@ -145,7 +146,7 @@ export default function FlowerRecognition() {
 
   return (
     <div className="bg-gradient-to-r from-blue-400 to-purple-500 min-h-screen flex items-center justify-center">
-      <div className="flex space-x-4"> {/* Wrapper to align both cards */}
+      <div className="flex space-x-4">
         <Card className="w-full max-w-md mx-auto rounded-lg shadow-lg border border-gray-300 bg-white p-5">
           <CardHeader>
             <CardTitle className="text-3xl text-center font-extrabold text-gray-800">Flower Recognition</CardTitle>
@@ -207,6 +208,7 @@ export default function FlowerRecognition() {
                 Clear Selection
               </Button>
               {error && <p className="text-red-500">{error}</p>}
+              {errorPrompt && <p className="text-red-500">{errorPrompt}</p>} {/* Mostrar errorPrompt si existe */}
               {result && (
                 <div className="mt-4">
                   <h3 className="text-lg font-semibold mb-2">Result:</h3>
@@ -216,19 +218,8 @@ export default function FlowerRecognition() {
                   </p>
                 </div>
               )}
+              {resultPrompt && <p className="text-gray-800">{resultPrompt}</p>} {/* Mostrar resultPrompt si existe */}
             </div>
-          </CardContent>
-        </Card>
-        <Card className="w-full max-w-md mx-auto rounded-lg shadow-lg border border-gray-300 bg-white p-5">
-          <CardHeader>
-            <CardTitle className="text-3xl text-center font-extrabold text-gray-800">Care Information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {careInfo ? (
-              <p className="text-gray-800">{resultPrompt}</p>
-            ) : (
-              <p className="text-gray-500">No care information available yet.</p>
-            )}
           </CardContent>
         </Card>
       </div>
