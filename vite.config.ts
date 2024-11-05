@@ -1,11 +1,12 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import rewriteAll from 'vite-plugin-rewrite-all'
 import path from "path";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), rewriteAll()],
   build: {
-    outDir: 'dist', // Asegúrate de que coincida con la configuración de Render
+    outDir: 'dist',
   },
   resolve: {
     alias: {
@@ -13,7 +14,6 @@ export default defineConfig({
     },
   },
   server: {
-    historyApiFallback: true,
     proxy: {
       "/api": {
         target: "https://my-api.plantnet.org", // Cambia a la URL de la API real
