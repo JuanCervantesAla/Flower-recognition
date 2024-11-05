@@ -22,7 +22,6 @@ const Scanner = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const flowers = ["flower1.jpg", "flower2.jpg", "flower3.jpg", "flower4.jpg"];
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,7 +130,7 @@ const Scanner = () => {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   };
 
-  
+
     return (
         <div>
             <div className="px-4 lg:px-14 max-w-screen-2xl mx-auto my-8" id="scanner">
