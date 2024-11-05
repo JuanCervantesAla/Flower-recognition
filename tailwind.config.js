@@ -1,11 +1,26 @@
-// tailwind.config.js
+const flowbite = require("flowbite-react/tailwind");
+
+/** @type {import('tailwindcss').Config} */
+
 module.exports = {
 	content: [
-	  "./src/**/*.{js,jsx,ts,tsx}",  // Incluye la carpeta `src` y todos los archivos donde uses Tailwind
+	  "./index.html",
+	  "./src/**/*.{js,jsx,ts,tsx}",
+	  flowbite.content(),
 	],
 	theme: {
-	  extend: {},
+	  extend: {
+		colors: {
+			'neutralSilver': '#F5F7FA',
+			'neutralDGrey': '#4D4D4D',
+			'brandPrimary': '#008c9a',
+			'neutralGrey': '#717171',
+			'gray900': '#18191F',
+		}
+	  },
 	},
-	plugins: [],
+	plugins: [
+		flowbite.plugin(),
+	],
   }
   

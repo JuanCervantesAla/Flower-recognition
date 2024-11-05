@@ -5,7 +5,6 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Label } from "./ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { useNavigate } from "react-router-dom";
@@ -28,6 +27,7 @@ export default function FirebaseAuth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [activeTab, setActiveTab] = useState('login');
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,27 +51,27 @@ export default function FirebaseAuth() {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 animate-gradient">
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-500 to-red-500 opacity-50 blur-lg transform scale-110"></div>
-      <Card className="max-w-sm w-full p-6 mx-auto mt-10 relative z-10 bg-white bg-opacity-80 backdrop-blur-md rounded-3xl shadow-2xl border-none">
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-r from-blue-300 via-white-400 to-green-300 animate-gradient">
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-300 via-white-400 to-green-300 opacity-50 blur-lg transform scale-110" />
+      <img className="absolute min-h-screen items-center justify-center flex w-full opacity-20" src="pattern.png" />
+      <Card className="max-w-sm w-full p-6 mx-auto mt-10 relative z-10 bg-white backdrop-blur-md rounded-3xl shadow-2xl border-none">
         <CardHeader>
-          <CardTitle className="text-3xl text-center font-extrabold text-gray-800 tracking-wide">Welcome!</CardTitle>
-          <CardDescription className="text-center text-gray-600 mt-2">Log in or register to continue</CardDescription>
+          <CardTitle className="text-3xl text-center font-bold text-gray-800">Hello, friend!</CardTitle>
+          <CardDescription className="text-center text-gray-600 mt-2">Sign an account to continue</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="login" className="w-full">
+          <Tabs defaultValue="login" className="w-full" value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-2 mb-4 bg-gray-000 rounded-full p-1">
-              <TabsTrigger value="login" className="py-2 font-medium text-sm text-gray-700 rounded-full focus:bg-blue-200">Login</TabsTrigger>
-              <TabsTrigger value="register" className="py-2 font-medium text-sm text-gray-700 rounded-full focus:bg-green-200">Register</TabsTrigger>
+              <TabsTrigger value="login" className={`py-2 font-medium text-sm text-gray-700 rounded-full focus:bg-blue-200 ${activeTab === 'login' ? 'bg-blue-200' : ''}`}>Login</TabsTrigger>
+              <TabsTrigger value="register" className={`py-2 font-medium text-sm text-gray-700 rounded-full focus:bg-green-200 ${activeTab === 'register' ? 'bg-green-200' : ''}`}>Sign Up</TabsTrigger>
             </TabsList>
             <TabsContent value="login">
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="login-email" className="text-gray-700 font-semibold">Email</Label>
                   <Input
                     id="login-email"
                     type="email"
-                    placeholder="user@domain.com"
+                    placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -79,10 +79,10 @@ export default function FirebaseAuth() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="login-password" className="text-gray-700 font-semibold">Password</Label>
                   <Input
                     id="login-password"
                     type="password"
+                    placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -95,29 +95,28 @@ export default function FirebaseAuth() {
             <TabsContent value="register">
               <form onSubmit={handleRegister} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="register-email" className="text-gray-700 font-semibold">Email</Label>
                   <Input
                     id="register-email"
                     type="email"
-                    placeholder="user@domain.com"
+                    placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="border border-gray-300 rounded-full px-4 py-2 focus:ring-2 focus:ring-green-500 transition ease-in-out duration-200"
+                    className="border border-green-200 rounded-full px-4 py-2 focus:ring-2 focus:ring-green-500 transition ease-in-out duration-200"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="register-password" className="text-gray-700 font-semibold">Password</Label>
                   <Input
                     id="register-password"
                     type="password"
+                    placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="border border-gray-300 rounded-full px-4 py-2 focus:ring-2 focus:ring-green-500 transition ease-in-out duration-200"
+                    className="border border-green-200 rounded-full px-4 py-2 focus:ring-2 focus:ring-green-500 transition ease-in-out duration-200"
                   />
                 </div>
-                <Button type="submit" className="w-full bg-green-500 text-white font-bold py-2 rounded-full hover:bg-green-600 transition ease-in-out duration-200">Register</Button>
+                <Button type="submit" className="w-full bg-green-500 text-white font-bold py-2 rounded-full hover:bg-green-600 transition ease-in-out duration-200">Sign Up</Button>
               </form>
             </TabsContent>
           </Tabs>
