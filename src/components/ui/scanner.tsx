@@ -35,11 +35,6 @@ const Scanner = () => {
     }
   };
 
-  const handleImageClick = (flower: string) => {
-    setSelectedImage(flower);
-    setImageFiles([]);
-  };
-
   const clearSelection = () => {
     setImageFiles([]);
     setSelectedImage(null);
@@ -130,23 +125,13 @@ const Scanner = () => {
       setErrorPrompt("Error fetching content: " + (error as Error).message);
     }
   };
-  
-  
 
   const capitalizeFirstLetter = (string: string) => {
     if (!string) return '';
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   };
 
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    afterChange: (current: number) => setSelectedImage(flowers[current]),
-  };
-
+  
     return (
         <div>
             <div className="px-4 lg:px-14 max-w-screen-2xl mx-auto my-8" id="scanner">
