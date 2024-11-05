@@ -1,10 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Button } from "./button";
-import { Card, CardDescription, CardContent, CardHeader, CardTitle } from "./card";
 import { Input } from "./input";
-import { Label } from "./label";
 import axios from 'axios';
-import Slider from 'react-slick'; 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 

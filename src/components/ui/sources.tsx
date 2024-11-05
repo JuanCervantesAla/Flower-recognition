@@ -1,5 +1,3 @@
-import React from "react";
-
 const Sources = () => {
     const sources = [
         {id: 1, title: "Back-Front End", description: "Interface, communication, user, design and performance.", image: "back-frontend.png"},
